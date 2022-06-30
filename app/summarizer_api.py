@@ -8,7 +8,7 @@ from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 
-from app.summarizer_pipeline import get_summaries_from_hf
+from app.summarizer_pipeline import get_summaries_from_hf, deterministic_summary_pipeline
 from app.models.pydantic import SummaryPayloadText, SummaryTextResponseSchema
 
 app = FastAPI()
@@ -29,5 +29,6 @@ async def create_summary_from_text(payload: SummaryPayloadText) -> SummaryTextRe
     """POST method for receiving the text to be summarized"""
     text = payload.text
     logger.info(f"Received text: {text}")
-    summary = get_summaries_from_hf(text)
+    # summary = get_summaries_from_hf(text)
+    summary = deterministic_summary_pipeline(text)
     return {"text": text, "summary": summary}

@@ -44,6 +44,7 @@ def get_summaries_from_hf(text: str) -> str:
      return a string contained the total summary.
 
      """
+    global tokenizer
     summaries = []
     str_chunks = get_nest_sentences(text, tokenizer)
     for i, str_chunk in enumerate(str_chunks):
