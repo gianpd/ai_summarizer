@@ -8,9 +8,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 
-# from app.summarizer_pipeline import get_summaries_from_hf
-from app.summarizer_pipeline import deterministic_summary_pipeline
-from app.models.pydantic import SummaryPayloadText, SummaryTextResponseSchema
+from summarizer_pipeline import deterministic_summary_pipeline
+from models.pydantic import SummaryPayloadText, SummaryTextResponseSchema
 
 app = FastAPI()
 origins = [

@@ -7,7 +7,9 @@ node_modules
 .cdk.staging
 cdk.out
 
-.venv/
+.venv*/
 *.env
+*.zip/
 __pycache__/
-infra/
+*infra/
+

@@ -4,9 +4,9 @@ import logging
 logging.basicConfig(stream=sys.stdout, format='%(asctime)-15s %(message)s',
                 level=logging.INFO, datefmt=None)
 logger = logging.getLogger("Summarizer")
-from functools import lru_cache
 
 from typing import List, Dict
+# from functools import lru_cache
 
 import spacy
 from spacy.lang.en.stop_words import STOP_WORDS
@@ -14,44 +14,44 @@ from string import punctuation
 from collections import Counter
 from heapq import nlargest
 
-from app.config import get_settings
+# from app.config import get_settings
 
-from transformers import AutoTokenizer
-from huggingface_hub.inference_api import InferenceApi
+# from transformers import AutoTokenizer
+# from huggingface_hub.inference_api import InferenceApi
 
-### instantiate the hugging face hub inference
-# Config = get_settings()
-# API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn" 
-inference = InferenceApi(repo_id="facebook/bart-large-cnn", token=os.getenv('HF_TOKEN'))
+# ### instantiate the hugging face hub inference
+# # Config = get_settings()
+# # API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn" 
+# inference = InferenceApi(repo_id="facebook/bart-large-cnn", token=os.getenv('HF_TOKEN'))
 
 # spacy nlp object
 nlp = spacy.load("en_core_web_sm")
 
-@lru_cache
-def load_tokenizer(tokenizer_model: str = 'facebook/bart-large-mnli'):
-    return AutoTokenizer.from_pretrained(tokenizer_model)
+# @lru_cache
+# def load_tokenizer(tokenizer_model: str = 'facebook/bart-large-mnli'):
+#     return AutoTokenizer.from_pretrained(tokenizer_model)
 
-tokenizer = load_tokenizer()
+# tokenizer = load_tokenizer()
 
 
-def get_summaries_from_hf(text: str) -> str:
-    """
-    Get summaries from hf: first of all get nested sentences in order to be sure each text has a max number of 1024 tokens, then call hf api inference.
+# def get_summaries_from_hf(text: str) -> str:
+#     """
+#     Get summaries from hf: first of all get nested sentences in order to be sure each text has a max number of 1024 tokens, then call hf api inference.
     
-    --Parameters
-     - text: (str) the string text to be summarized.
+#     --Parameters
+#      - text: (str) the string text to be summarized.
 
-     return a string contained the total summary.
+#      return a string contained the total summary.
 
-     """
-    global tokenizer
-    summaries = []
-    str_chunks = get_nest_sentences(text, tokenizer)
-    for i, str_chunk in enumerate(str_chunks):
-        summary = inference(str_chunk)[0]['summary_text']
-        logger.info(f"Retrived summary {i}: {summary}")
-        summaries.append(summary)
-    return ' '.join(summaries)
+#      """
+#     global tokenizer
+#     summaries = []
+#     str_chunks = get_nest_sentences(text, tokenizer)
+#     for i, str_chunk in enumerate(str_chunks):
+#         summary = inference(str_chunk)[0]['summary_text']
+#         logger.info(f"Retrived summary {i}: {summary}")
+#         summaries.append(summary)
+#     return ' '.join(summaries)
 
 
 def get_significant_words_list(doc: spacy.tokens.doc.Doc) -> List[str]:
@@ -98,7 +98,7 @@ def deterministic_summary_pipeline(doc: str) -> str:
     freq_word = get_frequency_words(words)
     sent_strenght = get_sent_strenght(doc, freq_word)
     
-    n_sents = int(n_sents * 0.30) # use just the 30% of the sentences
+    n_sents = int(n_sents * 0.20) # use just the 20% of the sentences
     logger.info(f"Getting the {n_sents} largest sentences for the summary ...")
     summarized_sentences = [x.text for x in nlargest(n_sents, sent_strenght, key=sent_strenght.get)]
 
@@ -119,30 +119,30 @@ def deterministic_summary_pipeline(doc: str) -> str:
 
 
 
-def get_nest_sentences(document: str, tokenizer: AutoTokenizer, token_max_length = 1024):
-    """
-    Starting from a large document, a list of sequential string is computed, such that each string has
-    a number of tokens equal to token_max_length.
+# def get_nest_sentences(document: str, tokenizer: AutoTokenizer, token_max_length = 1024):
+#     """
+#     Starting from a large document, a list of sequential string is computed, such that each string has
+#     a number of tokens equal to token_max_length.
 
-    ---Params
-    - document: the long text (str)
-    - tokenizer: the pre-trained tokenizer to be used.
-    - token_max_length: the maximum number of token has required by the NLP model (int)
-    """
-    sents = []
-    length = 0
-    doc = nlp(document)
-    s = ''
-    for sentence in doc.sents:
-        tokens_in_sentence = tokenizer(str(sentence), truncation=False, padding=False)[0]
-        length += len(tokens_in_sentence) # how many tokens the current sentence have summed to the previous
-        if length <= token_max_length:
-            s += sentence.text
-        else:
-            sents.append(s)
-            s = sentence.text
-            length = 0
-    # append last string with less # of tokens than token_max_length
-    sents.append(s)
-    logger.info(f'Returning {len(sents)} number of chunk strings')
-    return sents
+#     ---Params
+#     - document: the long text (str)
+#     - tokenizer: the pre-trained tokenizer to be used.
+#     - token_max_length: the maximum number of token has required by the NLP model (int)
+#     """
+#     sents = []
+#     length = 0
+#     doc = nlp(document)
+#     s = ''
+#     for sentence in doc.sents:
+#         tokens_in_sentence = tokenizer(str(sentence), truncation=False, padding=False)[0]
+#         length += len(tokens_in_sentence) # how many tokens the current sentence have summed to the previous
+#         if length <= token_max_length:
+#             s += sentence.text
+#         else:
+#             sents.append(s)
+#             s = sentence.text
+#             length = 0
+#     # append last string with less # of tokens than token_max_length
+#     sents.append(s)
+#     logger.info(f'Returning {len(sents)} number of chunk strings')
+#     return sents
