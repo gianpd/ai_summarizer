@@ -4,11 +4,12 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)-15s %(message)s',
                 level=logging.INFO, datefmt=None)
 logger = logging.getLogger("Summarizer")
 
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 
-from app.summarizer_pipeline import get_summaries_from_hf, deterministic_summary_pipeline
+# from app.summarizer_pipeline import get_summaries_from_hf
+from app.summarizer_pipeline import deterministic_summary_pipeline
 from app.models.pydantic import SummaryPayloadText, SummaryTextResponseSchema
 
 app = FastAPI()
@@ -22,7 +23,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# Mangum(app) # handler for lambda function 
+handler = Mangum(app) # handler for lambda function 
 
 @app.post("/summary", response_model=SummaryTextResponseSchema, status_code=201)
 async def create_summary_from_text(payload: SummaryPayloadText) -> SummaryTextResponseSchema:

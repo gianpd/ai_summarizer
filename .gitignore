@@ -10,3 +10,4 @@ cdk.out
 .venv/
 *.env
 __pycache__/
+infra/
