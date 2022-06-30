@@ -1,9 +1,9 @@
 import string
-from pydantic import BaseModel, AnyUrl
+from pydantic import BaseModel
 
 class SummaryPayloadText(BaseModel):
-    text: string
+    text: str
 
 class SummaryTextResponseSchema(SummaryPayloadText):
-    summary: string
+    summary: str
 

@@ -1,7 +1,12 @@
 import os
 import sys
+import logging
+logging.basicConfig(stream=sys.stdout, format='%(asctime)-15s %(message)s',
+                level=logging.INFO, datefmt=None)
+logger = logging.getLogger("Summarizer")
+from functools import lru_cache
 
-from typing import List, Union, Optional, Dict
+from typing import List, Dict
 
 import spacy
 from spacy.lang.en.stop_words import STOP_WORDS
@@ -9,14 +14,44 @@ from string import punctuation
 from collections import Counter
 from heapq import nlargest
 
+from app.config import get_settings
+
 from transformers import AutoTokenizer
+from huggingface_hub.inference_api import InferenceApi
 
-nlp = spacy.load('en_core_web_sm')
+### instantiate the hugging face hub inference
+# Config = get_settings()
+# API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn" 
+inference = InferenceApi(repo_id="facebook/bart-large-cnn", token=os.getenv('HF_TOKEN'))
 
-import logging
-logging.basicConfig(stream=sys.stdout, format='%(asctime)-15s %(message)s',
-                level=logging.INFO, datefmt=None)
-logger = logging.getLogger("Summarizer")
+# spacy nlp object
+nlp = spacy.load("en_core_web_sm")
+
+@lru_cache
+def load_tokenizer(tokenizer_model: str = 'facebook/bart-large-mnli'):
+    return AutoTokenizer.from_pretrained(tokenizer_model)
+
+tokenizer = load_tokenizer()
+
+
+def get_summaries_from_hf(text: str) -> str:
+    """
+    Get summaries from hf: first of all get nested sentences in order to be sure each text has a max number of 1024 tokens, then call hf api inference.
+    
+    --Parameters
+     - text: (str) the string text to be summarized.
+
+     return a string contained the total summary.
+
+     """
+    summaries = []
+    str_chunks = get_nest_sentences(text, tokenizer)
+    for i, str_chunk in enumerate(str_chunks):
+        summary = inference(str_chunk)[0]['summary_text']
+        logger.info(f"Retrived summary {i}: {summary}")
+        summaries.append(summary)
+    return ' '.join(summaries)
+
 
 def get_significant_words_list(doc: spacy.tokens.doc.Doc) -> List[str]:
     """
@@ -82,8 +117,6 @@ def deterministic_summary_pipeline(doc: str) -> str:
         return start_sentence + summary
 
 
-def load_tokenizer(tokenizer_model: str = 'facebook/bart-large-mnli'):
-    return AutoTokenizer.from_pretrained(tokenizer_model)
 
 def get_nest_sentences(document: str, tokenizer: AutoTokenizer, token_max_length = 1024):
     """
