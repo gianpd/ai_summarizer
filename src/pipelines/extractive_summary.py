@@ -6,7 +6,8 @@ logger = logging.getLogger("Summarizer")
 
 
 import nltk
-nltk.download('punkt')
+nltk.data.path.append("../tmp") # aws lambda read-only allows to write only to the tmp directory
+nltk.download('punkt', download_dir='../tmp')
 from sumy.parsers.html import HtmlParser
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer

@@ -6,10 +6,10 @@ logger = logging.getLogger("Summarizer")
 
 from fastapi import APIRouter
 
-from src.pipelines.extractive_summary import get_lsa_extractive_summary
-from src.pipelines.abstractive_summary import get_summaries_from_hf_api
+from pipelines.extractive_summary import get_lsa_extractive_summary
+from pipelines.abstractive_summary import get_summaries_from_hf_api
 
-from src.models.pydantic import SummaryPayloadText, SummaryTextResponseSchema, SummaryPayloadURL, SummaryURLResponseSchema
+from models.pydantic import SummaryPayloadText, SummaryTextResponseSchema, SummaryPayloadURL, SummaryURLResponseSchema
 
 router = APIRouter()
 
