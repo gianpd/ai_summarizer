@@ -1,3 +1,4 @@
+import os
 import sys
 import logging
 logging.basicConfig(stream=sys.stdout, format='%(asctime)-15s %(message)s',
@@ -5,8 +6,11 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)-15s %(message)s',
 logger = logging.getLogger("Summarizer")
 
 
+current_dir = os.getcwd()
+punkt_dir = './src/punkt' if current_dir == '/usr/src/app' else './punkt'  # if prod lambda or dev lambda environment
+
 import nltk
-nltk.data.path.append('./punkt') # aws lambda read-only allows to write only to the tmp directory
+nltk.data.path.append(punkt_dir) # aws lambda read-only allows to write only to the tmp directory
 # nltk.download('punkt', download_dir='/tmp/')
 from sumy.parsers.html import HtmlParser
 from sumy.parsers.plaintext import PlaintextParser
