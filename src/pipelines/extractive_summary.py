@@ -1,15 +1,11 @@
-import os
 import sys
 import logging
 logging.basicConfig(stream=sys.stdout, format='%(asctime)-15s %(message)s',
                 level=logging.INFO, datefmt=None)
 logger = logging.getLogger("Summarizer")
-from pathlib import Path
 
 
 import nltk
-ls_dir = list(map(lambda x: str(x), Path('.').iterdir()))
-print(ls_dir)
 nltk.data.path.append('./punkt') # aws lambda read-only allows to write only to the tmp directory
 # nltk.download('punkt', download_dir='/tmp/')
 from sumy.parsers.html import HtmlParser
