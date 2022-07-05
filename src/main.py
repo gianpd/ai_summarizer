@@ -22,4 +22,4 @@ async def healtcheck():
 
 app.include_router(router, prefix="/api")
 
-handler = Mangum(app) # handler for lambda function 
+handler = Mangum(app, lifespan='off') # handler for lambda function 

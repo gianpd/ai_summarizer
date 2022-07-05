@@ -13,3 +13,5 @@ cdk.out
 __pycache__/
 *infra/
 
+src/punkt/tokenizers/punkt.zip
+src/punkt

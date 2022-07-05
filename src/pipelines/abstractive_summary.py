@@ -5,10 +5,10 @@ logging.basicConfig(stream=sys.stdout, format='%(asctime)-15s %(message)s',
                 level=logging.INFO, datefmt=None)
 logger = logging.getLogger("Summarizer")
 
-from typing import List, Dict, Optional
-from functools import lru_cache
+# from typing import List, Dict, Optional
+# from functools import lru_cache
 
-# from app.config import get_settings
+# from .config import get_settings
 
 # from transformers import BartTokenizerFast
 from huggingface_hub.inference_api import InferenceApi
@@ -16,7 +16,9 @@ from huggingface_hub.inference_api import InferenceApi
 # ### instantiate the hugging face hub inference
 # Config = get_settings()
 # API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn" 
-inference = InferenceApi(repo_id="facebook/bart-large-cnn", token=os.getenv('HF_TOKEN'))
+
+# logger.info(f"HF_TOKEN: {Config.hf_token}")
+inference = InferenceApi(repo_id="facebook/bart-large-cnn", token=os.getenv("HF_TOKEN"))
 
 import spacy
 NLP = spacy.load("en_core_web_sm")
@@ -38,9 +40,15 @@ def get_summaries_from_hf_api(text: str) -> str:
      return (str) a string contained the total abstractive summary.
 
      """
-    global tokenizer
-    summary = inference(text)[0]['summary_text']
-    return summary
+    summary = inference(text)
+    logger.info(f"Abstractive Pipeline: get summary {summary}")
+    try:
+        summary = summary[0]['summary_text']
+        return summary
+    except KeyError as e:
+        logger.info(e)
+        return str(e)
+
 
 
 # def get_nest_sentences(document: str, tokenizer: BartTokenizerFast, token_max_length = 1024) -> List[str]:

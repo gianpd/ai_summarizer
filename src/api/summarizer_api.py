@@ -19,7 +19,9 @@ async def create_summary_from_text(payload: SummaryPayloadText) -> SummaryTextRe
     text = payload.text
     logger.info(f"Received text: {text}")
     extractive_summary = get_lsa_extractive_summary(text, url=False)
+    logger.info(f"EXCTRACTIVE SUMMARY: {extractive_summary}")
     abstractive_summary = get_summaries_from_hf_api(extractive_summary)
+    logger.info(f"ABSTRACTIVE SUMMARY: {abstractive_summary}")
     return {"text": text, "extractive_summary": extractive_summary, "abstractive_summary": abstractive_summary}
 
 @router.post("/summary_url", response_model=SummaryURLResponseSchema, status_code=201)
@@ -28,5 +30,7 @@ async def create_summary_from_text(payload: SummaryPayloadURL) -> SummaryURLResp
     str_url = payload.url
     logger.info(f"Received url: {str_url}")
     extractive_summary = get_lsa_extractive_summary(str_url, url=True)
+    logger.info(f"EXCTRACTIVE SUMMARY: {extractive_summary}")
     abstractive_summary = get_summaries_from_hf_api(extractive_summary)
+    logger.info(f"ABSTRACTIVE SUMMARY: {abstractive_summary}")
     return {"url": str_url, "extractive_summary": extractive_summary, "abstractive_summary": abstractive_summary}
