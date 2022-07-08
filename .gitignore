@@ -15,3 +15,5 @@ __pycache__/
 
 src/punkt/tokenizers/punkt.zip
 src/punkt
+
+notebooks/
