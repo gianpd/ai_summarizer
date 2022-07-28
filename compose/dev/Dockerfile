@@ -13,7 +13,7 @@ ENV PYTHONUNBUFFERED 1
 # install python dependencies
 COPY ./requirements/dev.txt ./
 
-RUN pip install --upgrade pip \
+RUN python -m pip install --upgrade pip \
     && pip install -r dev.txt
 
 ENV PYTHONPATH "${PYTHONPATH}:/usr/src/app/src"

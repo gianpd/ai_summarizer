@@ -31,6 +31,10 @@ async def create_summary_from_text(payload: SummaryPayloadURL) -> SummaryURLResp
     logger.info(f"Received url: {str_url}")
     extractive_summary = get_lsa_extractive_summary(str_url, url=True)
     logger.info(f"EXCTRACTIVE SUMMARY: {extractive_summary}")
-    abstractive_summary = get_summaries_from_hf_api(extractive_summary)
-    logger.info(f"ABSTRACTIVE SUMMARY: {abstractive_summary}")
+    if extractive_summary:
+        abstractive_summary = get_summaries_from_hf_api(extractive_summary)
+        logger.info(f"ABSTRACTIVE SUMMARY: {abstractive_summary}")
+    else:
+        abstractive_summary = ''
     return {"url": str_url, "extractive_summary": extractive_summary, "abstractive_summary": abstractive_summary}
+    
