@@ -18,4 +18,6 @@ RUN python -m pip install --upgrade pip \
 
 ENV PYTHONPATH "${PYTHONPATH}:/usr/src/app/src"
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "5010", "--reload"]
+EXPOSE 5010
+# CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "5010", "--reload"]
+CMD ["python", "src/justpy/main.py"]

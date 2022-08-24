@@ -30,7 +30,7 @@ from typing import List, Optional, Union, Dict
 
 NLP = spacy.load("en_core_web_sm")
 
-def get_lsa_extractive_summary(input_str: str, url: bool = True, sentence_count: Optional[int] = 15, language: Optional[str] = "english") -> str:
+def get_lsa_extractive_summary(input_str: str, url: bool = True, sentence_count: Optional[int] = 15, language: Optional[str] = "italian") -> str:
     """"Get an exctractive summary using the LSA (Latent Semantic Analysys) algorithm from an URL or from a Text.
     
     --Parameters
