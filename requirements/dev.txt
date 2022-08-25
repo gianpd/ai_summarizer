@@ -22,6 +22,7 @@ en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_
 # MarkupSafe==2.1.1
 # murmurhash==1.0.7
 nltk==3.7
+google==3.0.0
 # numpy==1.23.0
 # packaging==21.3
 # pathy==0.6.2

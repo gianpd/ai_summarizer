@@ -25,10 +25,18 @@ from string import punctuation
 from collections import Counter, namedtuple
 from operator import attrgetter
 
+from googlesearch import search
+
 from typing import List, Optional, Union, Dict
 
 
 NLP = spacy.load("en_core_web_sm")
+
+def get_summaries_from_search(search_str: str) -> List[str]:
+    results = [x for x in search(query=search_str, num=5, stop=5, pause=2, tbs="qdr:d")]
+    summaries = [(x, get_lsa_extractive_summary(input_str=x)) for x in results]
+    summaries = list(filter(lambda x: len(x[1] >= 700, summaries)))
+    return summaries
 
 def get_lsa_extractive_summary(input_str: str, url: bool = True, sentence_count: Optional[int] = 15, language: Optional[str] = "italian") -> str:
     """"Get an exctractive summary using the LSA (Latent Semantic Analysys) algorithm from an URL or from a Text.
